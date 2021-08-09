@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import { Header } from '../components/Header';
 import { Task, TasksList } from '../components/TasksList';
@@ -11,11 +11,17 @@ export function Home() {
   useEffect(() => console.log(tasks), [tasks]);
 
   function handleAddTask(newTaskTitle: string) {
+
+    // verifica se já existe uma task com este titulo
+    if (tasks.find(task => task.title === newTaskTitle)) return Alert.alert('Task já cadastrada', 'Você não pode cadastrar uma task com o mesmo nome');
+    
+    // adiciona task
     setTasks(oldState => oldState.concat({
       ...oldState,
       id: new Date().getTime(),
       title: newTaskTitle
     }));
+
   }
 
   function handleToggleTaskDone(id: number) {
@@ -30,7 +36,21 @@ export function Home() {
   }
 
   function handleRemoveTask(id: number) {
-    setTasks(oldState => oldState.filter(task => task.id !== id));
+
+    // confirma de o usuario quer remover o item
+    Alert.alert(
+      'Remover item',
+      'Tem certeza que você deseja remover esse item?',
+      [{
+        text: "Sim",
+        onPress: () => setTasks(oldState => oldState.filter(task => task.id !== id))
+      },
+      {
+         text: "Não",
+        onPress: () => {}
+      }]
+    )
+
   }
 
   return (
